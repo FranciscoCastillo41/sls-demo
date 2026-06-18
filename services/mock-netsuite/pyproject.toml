@@ -1,6 +1,6 @@
 [project]
 name = "mock-netsuite"
-version = "0.1.0"
+version = "0.2.0"
 description = "Disposable stand-in for NetSuite: emits records in true NetSuite shapes + an SSE stream."
 readme = "README.md"
 authors = [{ name = "FranciscoCastillo41", email = "frajcastillo@gmail.com" }]
