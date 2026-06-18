@@ -5,7 +5,16 @@ description = "Owner's-rep financial intelligence: the domain core and API on to
 readme = "README.md"
 authors = [{ name = "FranciscoCastillo41", email = "frajcastillo@gmail.com" }]
 requires-python = ">=3.12"
-dependencies = []
+dependencies = [
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.32",
+    "pydantic>=2.9",
+    "pydantic-settings>=2.6",
+    "httpx>=0.27",
+]
+
+[project.scripts]
+intelligence = "intelligence.__main__:main"
 
 [dependency-groups]
 dev = [
@@ -26,12 +35,17 @@ target-version = "py312"
 [tool.ruff.lint]
 extend-select = ["E", "W", "F", "I", "UP", "B", "C4", "SIM", "RET", "PTH", "ANN"]
 
+[tool.ruff.lint.flake8-bugbear]
+extend-immutable-calls = ["fastapi.Depends", "fastapi.Query", "fastapi.Path"]
+
 [tool.pyright]
 pythonVersion = "3.12"
 typeCheckingMode = "strict"
 include = ["src"]
 venvPath = "."
 venv = ".venv"
+# FastAPI route handlers are consumed by decorators, not direct calls.
+reportUnusedFunction = false
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
