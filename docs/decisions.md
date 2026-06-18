@@ -23,6 +23,14 @@ Each entry: the choice, and the *why*. Verified against mid-2026 practice.
 - **SSE via `queryClient.setQueryData`**, not TanStack's experimental `streamedQuery` — stability for a financial app.
 - **Orval + Zod** client from OpenAPI — runtime response validation so bad data fails loud.
 
+## Persistence
+
+- **Postgres everywhere** (mock + intelligence), via docker-compose `db` with separate databases (`mock_netsuite`, `intelligence`). Money is `NUMERIC(19,4)`.
+- **Async SQLAlchemy 2.0 + asyncpg** — honors "never block the event loop"; `Mapped[]` typed models.
+- **Mock seeds via `create_all` + idempotent seed; intelligence will use Alembic migrations.** Migrations matter where the schema evolves (the durable product); the mock's schema is frozen and its DB is ephemeral, so migrations there would be ceremony.
+- **Integration tests run against a real Postgres** (testcontainers), never SQLite — test the engine you ship.
+- **mock-netsuite stays flat** (concern-per-module), no hexagonal layers: it has no business domain to protect. Full Clean Architecture is reserved for `intelligence`, where the domain lives. Architecture depth matches component value.
+
 ## Process
 
 - **Trunk-based + squash-merge + linear history**, not Git Flow. Git Flow fights continuous integration; overkill for a small team.
