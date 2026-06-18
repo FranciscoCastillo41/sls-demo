@@ -16,14 +16,14 @@ tasks:
       - echo "Run service-specific setup once services are scaffolded."
 
   up:
-    desc: Bring up the full stack (mock-netsuite + intelligence + owner-app)
+    desc: Bring up the backend stack (db + mock-netsuite + intelligence)
     cmds:
-      - docker compose up --build
+      - docker compose --profile full up --build db mock-netsuite intelligence
 
   down:
     desc: Tear down the stack
     cmds:
-      - docker compose down
+      - docker compose --profile full down
 
   lint:
     desc: Lint + format-check everything
