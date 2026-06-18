@@ -1,3 +1,4 @@
 {
-  "services/mock-netsuite": "0.1.0"
+  "services/mock-netsuite": "0.1.0",
+  "services/intelligence": "0.1.0"
 }
