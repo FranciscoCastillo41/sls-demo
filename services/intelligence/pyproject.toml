@@ -1,6 +1,6 @@
 [project]
 name = "intelligence"
-version = "0.1.0"
+version = "0.2.0"
 description = "Owner's-rep financial intelligence: the domain core and API on top of NetSuite."
 readme = "README.md"
 authors = [{ name = "FranciscoCastillo41", email = "frajcastillo@gmail.com" }]
