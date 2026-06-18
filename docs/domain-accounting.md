@@ -68,10 +68,18 @@ erosion          = original_margin − projected_margin   (> 0 = margin slipping
 **Cash / receivables:**
 ```
 retainage_held       = billed_to_date × retainage_pct
-collectible_billed   = billed_to_date − retainage_held
-accounts_receivable  = collectible_billed − collected_to_date   (≥ 0)
-AR is bucketed by invoice age: current / 31–60 / 61–90 / 90+
+accounts_receivable  = Σ outstanding receivables        (== aging total, by construction)
+AR is bucketed by invoice age: current (≤30) / 31–60 / 61–90 / 90+ (>90)
 ```
+The **application layer** derives each receivable's `outstanding` from the
+invoice/payment/retainage records (its billed share, net of retainage and
+applied payments, floored at 0). The **domain** sums and ages them, so
+`accounts_receivable == Σ aging buckets` by construction, and a non-negative
+`outstanding` per invoice (enforced on `Receivable`) guarantees `AR ≥ 0`.
+
+All reported money is quantized to cents at the domain output boundary
+(`ROUND_HALF_EVEN`); intermediate ratios (POC, margins) stay full precision.
+The process decimal context is set once at app startup.
 
 ## Reconciliation invariants (Hypothesis proves these)
 

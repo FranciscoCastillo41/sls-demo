@@ -5,6 +5,10 @@
     "services/mock-netsuite": {
       "release-type": "python",
       "package-name": "mock-netsuite"
+    },
+    "services/intelligence": {
+      "release-type": "python",
+      "package-name": "intelligence"
     }
   }
 }
