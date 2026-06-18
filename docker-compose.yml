@@ -1,12 +1,32 @@
 # Local dev stack. One command (`task up`) brings up all three services.
 # Services are filled in as they are scaffolded — see docs/roadmap.md.
 services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      - POSTGRES_USER=sls
+      - POSTGRES_PASSWORD=sls
+      - POSTGRES_DB=sls
+    ports:
+      - "5432:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+      - ./infra/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sls"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
   mock-netsuite:
     build: ./services/mock-netsuite
     ports:
       - "8001:8000"
     environment:
-      - ENVIRONMENT=development
+      - MOCK_NETSUITE_DATABASE_URL=postgresql+asyncpg://sls:sls@db:5432/mock_netsuite
+    depends_on:
+      db:
+        condition: service_healthy
     profiles: ["full"]
 
   intelligence:
@@ -16,9 +36,13 @@ services:
     environment:
       - ENVIRONMENT=development
       - NETSUITE_BASE_URL=http://mock-netsuite:8000
+      - INTELLIGENCE_DATABASE_URL=postgresql+asyncpg://sls:sls@db:5432/intelligence
       # ANTHROPIC_API_KEY is wired in last; narrative falls back to deterministic copy without it.
     depends_on:
-      - mock-netsuite
+      db:
+        condition: service_healthy
+      mock-netsuite:
+        condition: service_started
     profiles: ["full"]
 
   owner-app:
@@ -30,3 +54,6 @@ services:
     depends_on:
       - intelligence
     profiles: ["full"]
+
+volumes:
+  db-data:

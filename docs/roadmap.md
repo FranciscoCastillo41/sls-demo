@@ -5,7 +5,7 @@ Build order is deliberate: **correctness before paint.** The math is bulletproof
 ## Status
 
 - [x] **0 — Repo & git foundation.** Monorepo skeleton, `.gitignore`, Biome, Lefthook, commitlint/commitizen, Taskfile, docker-compose skeleton, CI (quality + gated python/web), repo-scoped SSH signing, lean `docs/`. GitHub remote + Rulesets.
-- [ ] **1 — mock-netsuite.** FastAPI service: NetSuite-shaped records (`job`/`vendorbill`/`invoice`/`customerpayment`/`timebill`), seed data with the four baked-in projects (DFW hot, Omaha CO erosion, UT aged AR, one healthy), SSE stream of postings.
+- [x] **1 — mock-netsuite.** FastAPI service on Postgres (async SQLAlchemy 2.0 + asyncpg): NetSuite-shaped records (`job`/`vendorbill`/`invoice`/`customerpayment`/`changeorder`), seed data with the four baked-in projects (DFW hot, Omaha CO erosion, UT aged AR, PHX healthy), SSE stream of postings. Money `NUMERIC(19,4)`. Tested against a real Postgres via testcontainers. Dockerfile + compose `db` service + Release Please wired.
 - [ ] **2 — Domain core + Hypothesis.** `Money` value object; rev-rec, WIP, over/under-billing, EAC, projected margin-at-completion, retainage, AR aging — per billing model. Property tests for every invariant in `domain-accounting.md`. *This is the gate; nothing downstream until it's green.*
 - [ ] **3 — intelligence API.** Application use cases + infrastructure NetSuiteClient adapter (points at mock today) + FastAPI interface + OpenAPI. Reconciling portfolio P&L endpoint.
 - [ ] **4 — Early-warning engine.** Margin erosion, cash gaps, aged pay-apps, unrecovered change orders — forward-looking flags.
