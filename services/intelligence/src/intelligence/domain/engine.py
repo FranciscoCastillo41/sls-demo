@@ -78,6 +78,9 @@ def compute_project_metrics(project: Project, as_of: date) -> ProjectMetrics:
     underbilled = Money.zero() if work_in_progress.is_negative else work_in_progress
     overbilled = -work_in_progress if work_in_progress.is_negative else Money.zero()
 
+    # Erosion compares the original contract margin to the projected one. It is exact
+    # only while approved change orders price at the contract margin — the model does not
+    # yet carry per-CO budgeted cost. No demo project has approved COs. See docs/roadmap.md.
     original_margin = _margin(project.contract_fee, project.budgeted_cost)
     projected_margin = _margin(recognition.revenue_basis, recognition.cost_at_completion)
     aging = _age(project.receivables, as_of)
