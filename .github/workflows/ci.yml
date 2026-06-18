@@ -56,11 +56,14 @@ jobs:
           for svc in services/*/; do
             [ -f "$svc/pyproject.toml" ] || continue
             echo "::group::$svc"
-            uv sync --locked --all-extras --dev --project "$svc"
-            uv run --project "$svc" ruff check .
-            uv run --project "$svc" ruff format --check .
-            uv run --project "$svc" pyright
-            uv run --project "$svc" pytest
+            (
+              cd "$svc"
+              uv sync --locked --all-extras --dev
+              uv run ruff check .
+              uv run ruff format --check .
+              uv run pyright
+              uv run pytest
+            )
             echo "::endgroup::"
           done
 
