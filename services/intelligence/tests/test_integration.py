@@ -92,6 +92,10 @@ def test_portfolio_reconstructs_the_seeded_stories_end_to_end() -> None:
     assert Decimal(by_id["1001"]["margin_erosion"]) > 0
     assert Decimal(by_id["1003"]["aging"]["days_over_90"]) == Decimal("149000.00")
 
+    codes = {(w["project_id"], w["code"]) for w in body["warnings"]}
+    assert ("1001", "marginErosion") in codes
+    assert ("1003", "agedReceivables") in codes
+
 
 def test_portfolio_returns_502_when_netsuite_fails() -> None:
     def _fail(_: httpx.Request) -> httpx.Response:

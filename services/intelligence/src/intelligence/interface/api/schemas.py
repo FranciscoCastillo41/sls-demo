@@ -6,6 +6,12 @@ from pydantic import BaseModel
 
 from intelligence.domain.metrics import AgingBuckets, PortfolioMetrics, ProjectMetrics
 from intelligence.domain.money import DEFAULT_CURRENCY, Money
+from intelligence.domain.warnings import (
+    ProjectWarning,
+    Severity,
+    WarningCode,
+    evaluate_portfolio,
+)
 
 
 class AgingReport(BaseModel):
@@ -36,6 +42,14 @@ class ProjectReport(BaseModel):
     aging: AgingReport
 
 
+class WarningReport(BaseModel):
+    project_id: str
+    name: str
+    code: WarningCode
+    severity: Severity
+    message: str
+
+
 class PortfolioReport(BaseModel):
     currency: str
     revenue_recognized: Decimal
@@ -44,6 +58,7 @@ class PortfolioReport(BaseModel):
     work_in_progress: Decimal
     accounts_receivable: Decimal
     projects: list[ProjectReport]
+    warnings: list[WarningReport]
 
 
 def _amount(money: Money) -> Decimal:
@@ -82,6 +97,16 @@ def _project(metrics: ProjectMetrics) -> ProjectReport:
     )
 
 
+def _warning(warning: ProjectWarning) -> WarningReport:
+    return WarningReport(
+        project_id=warning.project_id,
+        name=warning.name,
+        code=warning.code,
+        severity=warning.severity,
+        message=warning.message,
+    )
+
+
 def to_portfolio_report(metrics: PortfolioMetrics) -> PortfolioReport:
     return PortfolioReport(
         currency=DEFAULT_CURRENCY,
@@ -91,4 +116,5 @@ def to_portfolio_report(metrics: PortfolioMetrics) -> PortfolioReport:
         work_in_progress=_amount(metrics.work_in_progress),
         accounts_receivable=_amount(metrics.accounts_receivable),
         projects=[_project(project) for project in metrics.projects],
+        warnings=[_warning(warning) for warning in evaluate_portfolio(metrics)],
     )
