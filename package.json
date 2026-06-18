@@ -1,0 +1,35 @@
+{
+  "name": "sls-demo",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Owner's-rep financial intelligence layer on top of NetSuite — month-end close, automated.",
+  "packageManager": "pnpm@10.14.0",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "prepare": "lefthook install",
+    "commit": "cz",
+    "lint": "biome check .",
+    "format": "biome format --write ."
+  },
+  "config": {
+    "commitizen": {
+      "path": "@commitlint/cz-commitlint"
+    }
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "lefthook"
+    ]
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.1.0",
+    "@commitlint/cli": "^19.5.0",
+    "@commitlint/config-conventional": "^19.5.0",
+    "@commitlint/cz-commitlint": "^19.5.0",
+    "commitizen": "^4.3.1",
+    "lefthook": "^1.10.0"
+  }
+}

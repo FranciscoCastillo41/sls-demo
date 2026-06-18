@@ -1,0 +1,22 @@
+# Git hooks — single Go binary, parallel, glob-scoped to the polyglot repo.
+# Ruff touches only Python; Biome touches only JS/TS; commitlint guards messages.
+pre-commit:
+  parallel: true
+  commands:
+    py-lint:
+      glob: "services/**/*.py"
+      run: uv run --project services/intelligence ruff check --fix {staged_files}
+      stage_fixed: true
+    py-format:
+      glob: "services/**/*.py"
+      run: uv run --project services/intelligence ruff format {staged_files}
+      stage_fixed: true
+    js-check:
+      glob: "*.{ts,tsx,js,jsx,json,jsonc,css}"
+      run: pnpm exec biome check --write {staged_files}
+      stage_fixed: true
+
+commit-msg:
+  commands:
+    commitlint:
+      run: pnpm exec commitlint --edit {1}

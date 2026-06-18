@@ -1,0 +1,32 @@
+# Local dev stack. One command (`task up`) brings up all three services.
+# Services are filled in as they are scaffolded — see docs/roadmap.md.
+services:
+  mock-netsuite:
+    build: ./services/mock-netsuite
+    ports:
+      - "8001:8000"
+    environment:
+      - ENVIRONMENT=development
+    profiles: ["full"]
+
+  intelligence:
+    build: ./services/intelligence
+    ports:
+      - "8000:8000"
+    environment:
+      - ENVIRONMENT=development
+      - NETSUITE_BASE_URL=http://mock-netsuite:8000
+      # ANTHROPIC_API_KEY is wired in last; narrative falls back to deterministic copy without it.
+    depends_on:
+      - mock-netsuite
+    profiles: ["full"]
+
+  owner-app:
+    build: ./apps/owner-app
+    ports:
+      - "3000:3000"
+    environment:
+      - INTELLIGENCE_BASE_URL=http://intelligence:8000
+    depends_on:
+      - intelligence
+    profiles: ["full"]

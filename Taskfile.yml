@@ -1,0 +1,41 @@
+# Single entrypoint for the whole monorepo. Run `task` to list.
+# https://taskfile.dev
+version: "3"
+
+tasks:
+  default:
+    cmds:
+      - task --list
+    silent: true
+
+  setup:
+    desc: Install all toolchains (pnpm + uv) and git hooks
+    cmds:
+      - pnpm install
+      - pnpm exec lefthook install
+      - echo "Run service-specific setup once services are scaffolded."
+
+  up:
+    desc: Bring up the full stack (mock-netsuite + intelligence + owner-app)
+    cmds:
+      - docker compose up --build
+
+  down:
+    desc: Tear down the stack
+    cmds:
+      - docker compose down
+
+  lint:
+    desc: Lint + format-check everything
+    cmds:
+      - pnpm exec biome check .
+
+  fmt:
+    desc: Auto-format everything
+    cmds:
+      - pnpm exec biome format --write .
+
+  test:
+    desc: Run all test suites
+    cmds:
+      - echo "Wired per service as they are scaffolded — see docs/roadmap.md."

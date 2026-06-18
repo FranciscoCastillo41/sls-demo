@@ -1,0 +1,82 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# Cancel superseded runs on the same ref.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ── Detect what changed so we never run JS jobs for Python-only edits ──
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      python: ${{ steps.filter.outputs.python }}
+      web: ${{ steps.filter.outputs.web }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            python:
+              - 'services/**'
+            web:
+              - 'apps/owner-app/**'
+
+  # ── Repo-wide formatting / lint (always runs; cheap) ──
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec biome ci .
+
+  # ── Python services (gated) — added with the first service ──
+  python:
+    needs: changes
+    if: needs.changes.outputs.python == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      - name: Lint, type-check, test each service
+        run: |
+          for svc in services/*/; do
+            [ -f "$svc/pyproject.toml" ] || continue
+            echo "::group::$svc"
+            uv sync --locked --all-extras --dev --project "$svc"
+            uv run --project "$svc" ruff check .
+            uv run --project "$svc" ruff format --check .
+            uv run --project "$svc" pyright
+            uv run --project "$svc" pytest
+            echo "::endgroup::"
+          done
+
+  # ── Next.js app (gated) — added with the owner-app ──
+  web:
+    needs: changes
+    if: needs.changes.outputs.web == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter owner-app run lint
+      - run: pnpm --filter owner-app run build
+      - run: pnpm --filter owner-app run test

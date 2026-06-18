@@ -1,0 +1,53 @@
+# ── Python / uv ───────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+.venv*/
+*.egg-info/
+dist/
+build/
+.ruff_cache/
+.mypy_cache/
+.pyright/
+.pytest_cache/
+.hypothesis/
+.coverage
+htmlcov/
+# uv.lock IS committed (reproducible builds)
+
+# ── Node / pnpm / Next.js ─────────────────────────────────────
+node_modules/
+.pnpm-store/
+.next/
+out/
+*.tsbuildinfo
+next-env.d.ts
+coverage/
+playwright-report/
+test-results/
+# pnpm-lock.yaml IS committed
+
+# ── Generated API client (regenerated from OpenAPI) ───────────
+# kept in source per docs/conventions.md — do NOT ignore
+
+# ── Environment / secrets ─────────────────────────────────────
+.env
+.env.local
+.env.*.local
+.env.production
+# .env.example IS committed
+
+# ── Hosting / tooling ─────────────────────────────────────────
+.vercel/
+.railway/
+
+# ── OS / editor ───────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
